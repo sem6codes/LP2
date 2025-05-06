@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Diffie-Hellman Key Exchange</title>
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    input, button { padding: 6px; margin: 6px 0; }
+  </style>
+</head>
+<body>
+
+  <h2>Diffie-Hellman Key Exchange</h2>
+  
+  <label>Prime (p):</label><br>
+  <input type="number" id="prime" value="23"><br>
+
+  <label>Base (g):</label><br>
+  <input type="number" id="base" value="5"><br>
+
+  <label>Your Secret Key (Alice - a):</label><br>
+  <input type="number" id="aliceSecret" value="6"><br>
+
+  <button onclick="performDH()">Exchange Keys</button>
+
+  <h3>Results</h3>
+  <p><strong>Alice's Public Key:</strong> <span id="alicePub"></span></p>
+  <p><strong>Bob's Secret Key (hidden):</strong> <span id="bobSecret"></span></p>
+  <p><strong>Bob's Public Key:</strong> <span id="bobPub"></span></p>
+  <p><strong>Shared Secret (Alice):</strong> <span id="aliceShared"></span></p>
+  <p><strong>Shared Secret (Bob):</strong> <span id="bobShared"></span></p>
+
+  <script>
+    function modPow(base, exponent, modulus) {
+      if (modulus === 1) return 0;
+      let result = 1;
+      base = base % modulus;
+      while (exponent > 0) {
+        if (exponent % 2 === 1) result = (result * base) % modulus;
+        exponent = Math.floor(exponent / 2);
+        base = (base * base) % modulus;
+      }
+      return result;
+    }
+
+    function performDH() {
+      const p = parseInt(document.getElementById('prime').value);
+      const g = parseInt(document.getElementById('base').value);
+      const a = parseInt(document.getElementById('aliceSecret').value);
+
+      const A = modPow(g, a, p); // Alice's public key
+      const b = Math.floor(Math.random() * (p - 2)) + 2; // Bob's secret key (2 ≤ b < p)
+      const B = modPow(g, b, p); // Bob's public key
+
+      const sharedAlice = modPow(B, a, p); // Shared secret at Alice
+      const sharedBob = modPow(A, b, p);   // Shared secret at Bob
+
+      document.getElementById('alicePub').innerText = A;
+      document.getElementById('bobSecret').innerText = b; // Show for demonstration only
+      document.getElementById('bobPub').innerText = B;
+      document.getElementById('aliceShared').innerText = sharedAlice;
+      document.getElementById('bobShared').innerText = sharedBob;
+    }
+  </script>
+
+</body>
+</html>
